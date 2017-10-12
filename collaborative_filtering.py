@@ -143,30 +143,31 @@ def evaluate(recommend_df, data_ans):
         #    break
     return np.mean(scores)
 
-print("make_data_small")
-filename = 'data/train/train_C.tsv'
-train = pd.read_table(filename)
-train_small, test_small, test_small_ans = make_data_small(train)
+if __name__ == '__main__':
+    print("make_data_small")
+    filename = 'data/train/train_C.tsv'
+    train = pd.read_table(filename)
+    train_small, test_small, test_small_ans = make_data_small(train)
 
-users_small = train_small['user_id'].unique()
-products_small = train_small['product_id'].unique()
-print("event: " + str(len(train_small)))
-print("user: " + str(len(users_small)))
-print("product: " + str(len(products_small)))
+    users_small = train_small['user_id'].unique()
+    products_small = train_small['product_id'].unique()
+    print("event: " + str(len(train_small)))
+    print("user: " + str(len(users_small)))
+    print("product: " + str(len(products_small)))
 
-print("make_crossmat")
-mats, mat = make_crossmat(train_small, users_small, products_small)
+    print("make_crossmat")
+    mats, mat = make_crossmat(train_small, users_small, products_small)
 
-print("matrix_factorization")
-nP, nQ = matrix_factorization(mat, 5, threshold=1.0)
-mat_estimate = np.dot(nP.T,nQ)
+    print("matrix_factorization")
+    nP, nQ = matrix_factorization(mat, 5, threshold=1.0)
+    mat_estimate = np.dot(nP.T,nQ)
 
-print("make_recommend")
-exclude_mat = (mats[3] != 0)
-submit_df = make_recommend(test_small, mat, exclude_mat, users_small, products_small)
+    print("make_recommend")
+    exclude_mat = (mats[3] != 0)
+    submit_df = make_recommend(test_small, mat, exclude_mat, users_small, products_small)
 
-print("evaluate")
-v = evaluate(submit_df, test_small_ans)
+    print("evaluate")
+    v = evaluate(submit_df, test_small_ans)
 
-print(v)
+    print(v)
 
