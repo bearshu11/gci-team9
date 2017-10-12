@@ -23,10 +23,10 @@ def make_data_small(data):
     
     return data_small, test_small, test_small_ans
 
-def make_crossmat(data, users = None, products = None):
-    if users == None:
+def make_crossmat(data, users = [], products = []):
+    if len(users) == 0:
         users = data['user_id'].unique()
-    if products == None:
+    if len(products) == 0:
         products = data['product_id'].unique()
     
     #ユーザーとプロダクトを行列のインデックスに変換
@@ -83,11 +83,11 @@ def matrix_factorization(R, K, steps=5000, alpha=0.0002, beta=0.02, threshold=0.
         error = get_error(R, P, Q, beta)
         if step % 100 == 0:
             time_spent = time.time()-t1
-            print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒\r"),
+            print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒")
         step += 1
         if error < threshold or step >= steps:
             time_spent = time.time()-t1
-            print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒\r"),
+            print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒")
             break
     return P, Q
 
