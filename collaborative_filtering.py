@@ -38,7 +38,7 @@ def make_crossmat(data, users = [], products = []):
     def count_event(event):
         mats[event['event_type'], event['user_id_int'], event['product_id_int']] += 1
         return 0
-    train_small.apply(count_event, axis=1)
+    data.apply(count_event, axis=1)
     
     #スコアの重みをかけて足す
     scores = np.array([
