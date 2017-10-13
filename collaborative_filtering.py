@@ -143,6 +143,36 @@ def evaluate(recommend_df, data_ans):
         #    break
     return np.mean(scores)
 
+def nmf_fill0(R, K, steps=5000, beta=0.02, threshold=0.001):
+    isvalue = (R != 0)
+    np.random.seed(1234)
+    P = np.random.rand(K, len(R))
+    Q = np.random.rand(K, len(R[0]))
+    P = np.transpose(P)
+    t1 = time.time()
+    step = 0
+    while True:
+        PQzero = np.multiply(np.dot(P, Q), isvalue)
+        
+        Qn = np.dot(P.T, R)
+        Qd = np.dot(P.T, PQzero)
+        Q = Q * Qn / Qd
+        
+        Pn = np.dot(R, Q.T)
+        Pd = np.dot(PQzero, Q.T)
+        P = P * Pn / Pd
+        
+        error = get_error(R, P.T, Q, beta)
+        if step % 100 == 0:
+            time_spent = time.time()-t1
+            print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒")
+        step += 1
+        if error < threshold or step >= steps:
+            time_spent = time.time()-t1
+            print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒")
+            break
+    return P.T, Q
+
 if __name__ == '__main__':
     print("make_data_small")
     filename = 'data/train/train_C.tsv'
