@@ -148,21 +148,21 @@ def nmf_fill0(R, K, steps=5000, beta=0.02, threshold=0.001):
     np.random.seed(1234)
     P = np.random.rand(K, len(R))
     Q = np.random.rand(K, len(R[0]))
-    P = np.transpose(P)
+    RT = R.T
     t1 = time.time()
     step = 0
     while True:
-        PQzero = np.multiply(np.dot(P, Q), isvalue)
+        PQzero = np.multiply(np.dot(P.T, Q), isvalue)
         
-        Qn = np.dot(P.T, R)
-        Qd = np.dot(P.T, PQzero)
+        Qn = np.dot(P, R)
+        Qd = np.dot(P, PQzero)
         Q = Q * Qn / Qd
         
-        Pn = np.dot(R, Q.T)
-        Pd = np.dot(PQzero, Q.T)
+        Pn = np.dot(Q, RT)
+        Pd = np.dot(Q, PQzero.T)
         P = P * Pn / Pd
         
-        error = get_error(R, P.T, Q, beta)
+        error = get_error(R, P, Q, beta)
         if step % 100 == 0:
             time_spent = time.time()-t1
             print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒")
@@ -171,7 +171,7 @@ def nmf_fill0(R, K, steps=5000, beta=0.02, threshold=0.001):
             time_spent = time.time()-t1
             print("step: " + str(step) + " error: " + str(error) + " time: " + str(time_spent) + "秒")
             break
-    return P.T, Q
+    return P, Q
 
 if __name__ == '__main__':
     print("make_data_small")
