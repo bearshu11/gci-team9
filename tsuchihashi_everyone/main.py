@@ -1,6 +1,5 @@
 import csv
 from cf import DataProcessor
-from cf import MatrixFactorization
 import pandas as pd
 import time
 import sys
@@ -14,6 +13,7 @@ if __name__=="__main__":
             data.append(row)
     data.pop(0)
     
+    # ユーザー、プロダクトのクラスター対応辞書オブジェクトを作る用
     df = pd.read_csv("train/train_A.tsv", sep='\t')
 
     start = time.time()
@@ -23,8 +23,16 @@ if __name__=="__main__":
     product_cluster_dict = processor.make_product_cluster_dict(df)
     
     matrix = processor.make_matrix_for_CF(user_cluster_dict,product_cluster_dict)
-    print(matrix)
+    
+    # 評価値行列の確認用なので、必要なかったらコメントアウトしてください
+    print(matrix[0])
     sys.exit()
+    
+    """
+        以下熊田さんのMatrix Factorization
+        今回は荻野さんのMatrix Factorizationを採用するとのことで、
+        こちらは使わないのでコメントアウトしておきます。
+    
     matrix_size = processor.get_max_ids()
     dif = time.time() - start
     print("time:{}".format(dif)+"[sec]")
@@ -46,3 +54,5 @@ if __name__=="__main__":
         writer = csv.writer(f, delimiter=',')
         for row in nQ:
             writer.writerow(row)
+            
+    """

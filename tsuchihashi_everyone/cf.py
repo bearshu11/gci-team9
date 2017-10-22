@@ -78,11 +78,11 @@ class DataProcessor():
             max_user_id += 1
             max_product_id += 1
 
-        return [max_user_id, max_product_id]
+        return max_user_id, max_product_id
 
     def make_matrix_for_CF(self,user_cluster_dict,product_cluster_dict):
         """
-        MFを適用できる表(dict型)を作成する。（評価値の表を作る）
+        MFを適用できる表(numpy.ndarray型)を作成する。（評価値の表を作る）
 
         cf_dataの形式：
         {user_id: {product_id: [[event_type, ad, time_stamp], ...], ...}, ...}
@@ -95,28 +95,12 @@ class DataProcessor():
              ...},
         ...}
 
-        cf_dictの形式：
-        {user_id: {product_id: 評価値, ...}, ...}
-
-        cf_dictのイメージ：
-        {0: {9250: 2,
-             14068: 1,
-             1254: 1,
-             3316: 1,
-             3009: 1,
-             4433: 2,
-             8525: 1,
-             9753: 2},
-        34: {394: 2,
-            1555: 1,
-            10093: 1},
-        108: {39: 2,
-              ...},
-        ...}
+        cf_ndarrayの形式：
+        　　　　サイズ(max_user_id, max_product_id)の二次元配列
+        　　　　評価値がない部分はnumpy.nanが入る
 
         """
-
-        #
+        
         cf_data=dict()
         for row in self.data:
             user_id = self.id_str2int(row[0])
@@ -130,20 +114,30 @@ class DataProcessor():
 
             cf_data[user_id][product_id].append(action)
 
+        print("---checkpoint 1---")
 
-#         print(cf_data)
-
-        cf_dict=dict()
+        # (max_user_id, max_product_id)の評価値行列cf_ndarrayを、全要素nanで初期化
+        # おそらくここが計算量爆発の原因
+        max_user_id, max_product_id = self.get_max_ids()
+        cf_ndarray = np.empty((max_user_id, max_product_id))
+        cf_ndarray.fill(np.nan)
+        
+        print("---checkpoint 2---")
+        
+        # cf_ndarrayの要素のうち、cf_dataに入っている(user_id, product_id)の組の要素
+        # cf_ndarraycf_ndarray[user_id][product_id]の部分のみ、compute_value()の値で更新
         for user_id, user_actions in cf_data.items():
-            cf_dict[user_id] = dict()
             user_cluster_no = user_cluster_dict[user_id]
-            for product_id, actions in user_actions.items():
-                print(product_id)
+            for product_id, actions in user_actions.items():               
+                # ごく稀にクラスター分けできないプロダクトが現れる(１件のみ確認)ので
+                # その場合はスキップしてnanのままにする
+                if product_id not in product_cluster_dict:
+                    continue
                 product_cluster_no = product_cluster_dict[product_id]
                 value = self.compute_value(user_id, product_id, actions, user_cluster_no, product_cluster_no)
-                cf_dict[user_id][product_id] = value
+                cf_ndarray[user_id][product_id] = value
 
-        return cf_dict
+        return cf_ndarray
     
     def make_user_cluster_dict(self,df):
         # ユーザーとクラスターの対応辞書作成
@@ -206,6 +200,12 @@ class DataProcessor():
         
         return product_cluster_dict
 
+
+"""
+以下熊田さんのMatrix Factorization
+今回は荻野さんのMatrix Factorizationを採用するとのことで、
+こちらは使わないのでコメントアウトしておきます。
+
 class MatrixFactorization():
     def get_rating_error(self, r, p, q):
         s = 0
@@ -241,3 +241,4 @@ class MatrixFactorization():
                 print("FINISHED! step is " + str(step))
                 break
         return P, Q
+"""
