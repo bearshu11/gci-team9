@@ -23,37 +23,53 @@ def make_data_small(data):
     
     return data_small, test_small, test_small_ans
 
-def make_crossmat(data, users = [], products = []):
+def make_eventcountmat(data, event_type, users = [], products = []):
     if len(users) == 0:
         users = data['user_id'].unique()
     if len(products) == 0:
         products = data['product_id'].unique()
     
     #ユーザーとプロダクトを行列のインデックスに変換
-    data['user_id_int'] = data['user_id'].map(lambda x: np.where(users == x)[0][0])
-    data['product_id_int'] = data['product_id'].map(lambda x: np.where(products == x)[0][0])
+    users_ind = pd.Index(users)
+    products_ind = pd.Index(products)
+    data['user_id_int'] = data['user_id'].map(lambda x: users_ind.get_loc(x))
+    data['product_id_int'] = data['product_id'].map(lambda x: products_ind.get_loc(x))
     
-    #各イベントごとにカウント
-    mats = np.zeros((4, len(users), len(products)))
+    mat = np.zeros((len(users), len(products)), dtype='int16')
     def count_event(event):
-        mats[event['event_type'], event['user_id_int'], event['product_id_int']] += 1
+        mat[event['user_id_int'], event['product_id_int']] += 1
         return 0
+    data = data[data['event_type'] == event_type]
     data.apply(count_event, axis=1)
-    
+    return mat
+
+def make_eventcountmats(data, users = [], products = []):
+    if len(users) == 0:
+        users = data['user_id'].unique()
+    if len(products) == 0:
+        products = data['product_id'].unique()
+    #各イベントごとにカウント
+    mats = np.zeros((4, len(users), len(products)), dtype='int16')
+    for i in [0, 1, 2, 3]:
+        mats[i, :, :] = make_eventcountmat(data, i, users, products)    
+    return mats
+
+def make_crossmat(data = None, users = [], products = [], scores = [], mats = []):
     #スコアの重みをかけて足す
-    scores = np.array([
-        3, #0カート
-        1, #1閲覧
-        2, #2クリック
-        4  #3コンバージェンス
-    ])
+    if len(scores) == 0:
+        scores = np.array([
+            3, #0カート
+            1, #1閲覧
+            2, #2クリック
+            4  #3コンバージェンス
+        ])
+    if len(mats) == 0:
+        mats = make_eventcountmats(data, users, products)
     crossmat = np.einsum('ijk,i', mats, scores)
-    
-    return mats, crossmat
+    return crossmat
 
 def get_rating_error(r, p, q):
     return r - np.dot(p, q)
-
 
 def get_error(R, P, Q, beta):
     error = 0.0
@@ -64,7 +80,6 @@ def get_error(R, P, Q, beta):
             error += pow(get_rating_error(R[i][j], P[:,i], Q[:,j]), 2)
     error += beta/2.0 * (np.linalg.norm(P) + np.linalg.norm(Q))
     return error
-
 
 def matrix_factorization(R, K, steps=5000, alpha=0.0002, beta=0.02, threshold=0.001):
     P = np.random.rand(K, len(R))
@@ -91,19 +106,19 @@ def matrix_factorization(R, K, steps=5000, alpha=0.0002, beta=0.02, threshold=0.
             break
     return P, Q
 
-def make_recommend(test, mat, exclude_mat, users, products):
+def make_recommend(test, mat, users, products):
+    users_ind = pd.Index(users)
     recommend_df = pd.DataFrame([[],[]]).T
     for user_id in test['user_id']:
-        user_int = np.where(users == user_id)[0][0]
+        user_int = users_ind.get_loc(user_id)
         scores = mat[user_int,:]
         ranking = np.argsort(scores)
         recommends = []
         for r in ranking:
-            if not exclude_mat[user_int,r]:
-                product_id = products[r]
-                recommends.append(product_id)
-                if len(recommends) >= 22:
-                    break
+            product_id = products[r]
+            recommends.append(product_id)
+            if len(recommends) >= 22:
+                break
         k = len(recommends)
         add = pd.DataFrame([[user_id] * k, recommends, range(k)]).T
         recommend_df = pd.concat([recommend_df, add], axis = 0)
@@ -143,9 +158,10 @@ def evaluate(recommend_df, data_ans):
         #    break
     return np.mean(scores)
 
-def nmf_fill0(R, K, steps=5000, beta=0.02, threshold=0.001):
+def nmf_fill0(R, K, steps=5000, beta=0.02, threshold=0.001, random_state=1234):
     isvalue = (R != 0)
-    np.random.seed(1234)
+    eps = np.finfo(float).eps
+    np.random.seed(random_state)
     P = np.random.rand(K, len(R))
     Q = np.random.rand(K, len(R[0]))
     RT = R.T
@@ -155,11 +171,13 @@ def nmf_fill0(R, K, steps=5000, beta=0.02, threshold=0.001):
         PQzero = np.multiply(np.dot(P.T, Q), isvalue)
         
         Qn = np.dot(P, R)
-        Qd = np.dot(P, PQzero)
+        Qd = np.dot(P, PQzero) + eps
+        #Q = np.matrix(np.array(Q) * np.array(Qn) / np.array(Qd))
         Q = Q * Qn / Qd
         
         Pn = np.dot(Q, RT)
-        Pd = np.dot(Q, PQzero.T)
+        Pd = np.dot(Q, PQzero.T) + eps
+        #P = np.matrix(np.array(P) * np.array(Pn) / np.array(Pd))
         P = P * Pn / Pd
         
         error = get_error(R, P, Q, beta)
@@ -175,26 +193,34 @@ def nmf_fill0(R, K, steps=5000, beta=0.02, threshold=0.001):
 
 if __name__ == '__main__':
     print("make_data_small")
-    filename = 'data/train/train_C.tsv'
+    filename = '../data/train/train_C.tsv'
     train = pd.read_table(filename)
     train_small, test_small, test_small_ans = make_data_small(train)
 
     users_small = train_small['user_id'].unique()
+    users_small.sort()
     products_small = train_small['product_id'].unique()
+    products_small.sort()
     print("event: " + str(len(train_small)))
     print("user: " + str(len(users_small)))
     print("product: " + str(len(products_small)))
 
     print("make_crossmat")
-    mats, mat = make_crossmat(train_small, users_small, products_small)
+    mats = make_eventcountmats(train_small, users_small, products_small)
+    mat = make_crossmat(mats = mats)
 
-    print("matrix_factorization")
-    nP, nQ = matrix_factorization(mat, 5, threshold=1.0)
-    mat_estimate = np.dot(nP.T,nQ)
+    print("NMF")
+    #nP, nQ = matrix_factorization(mat, 5, threshold=1.0)
+    #mat_estimate = np.dot(nP.T,nQ)
+    from sklearn.decomposition import NMF
+    model = NMF(n_components=5, init='random', random_state=9, solver='mu', max_iter=5000)
+    P = model.fit_transform(mat)
+    Q = model.components_
+    mat_estimate = np.dot(P, Q)
 
     print("make_recommend")
-    exclude_mat = (mats[3] != 0)
-    submit_df = make_recommend(test_small, mat, exclude_mat, users_small, products_small)
+    mat_add = (mats[3] != 0) * (-10)
+    submit_df = make_recommend(test_small, mat_estimate + mat_add, users_small, products_small)
 
     print("evaluate")
     v = evaluate(submit_df, test_small_ans)
