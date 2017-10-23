@@ -8,6 +8,8 @@ import time
 import sys
 
 if __name__=="__main__":
+    print(time.ctime()),
+    print("start main")
     data = []
     with open("../data/train/train_A.tsv","r") as f:
         reader = csv.reader(f, delimiter='\t')
@@ -25,9 +27,11 @@ if __name__=="__main__":
     user_cluster_dict = processor.make_user_cluster_dict(df)
     product_cluster_dict = processor.make_product_cluster_dict(df)
     
-    print(time.ctime())
+    print(time.ctime()),
+    print("start make_matrix_for_CF")
     matrix = processor.make_matrix_for_CF(user_cluster_dict,product_cluster_dict)
-    print(time.ctime())
+    print(time.ctime()),
+    print("end make_matrix_for_CF")
     
     # 評価値行列の確認用なので、必要なかったらコメントアウトしてください
     print(matrix[0])
