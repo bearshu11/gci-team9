@@ -67,6 +67,9 @@ if __name__=="__main__":
     dif = time.time() - start
     print("time:{}".format(dif)+"[sec]")
 
+    with open("./time.txt", "w") as f:
+        f.write("time:{}".format(dif)+"[sec]")
+
     print(nP[0], nQ[0])
 
     with open("../../data/train/user_vector_D.csv","w") as f:
