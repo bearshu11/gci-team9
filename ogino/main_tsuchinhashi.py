@@ -7,11 +7,11 @@ import pandas as pd
 import time
 import sys
 
-if __name__=="__main__":
+def main_tsu():
     print(time.ctime()),
     print("start main")
     data = []
-    with open("../data/train/train_A.tsv","r") as f:
+    with open("../data/train/train_C.tsv","r") as f:
         reader = csv.reader(f, delimiter='\t')
 
         for row in reader:
@@ -19,7 +19,7 @@ if __name__=="__main__":
     data.pop(0)
     
     # ユーザー、プロダクトのクラスター対応辞書オブジェクトを作る用
-    df = pd.read_csv("../data/train/train_A.tsv", sep='\t')
+    df = pd.read_csv("../data/train/train_C.tsv", sep='\t')
 
     start = time.time()
     processor = DataProcessor(data)
@@ -35,5 +35,8 @@ if __name__=="__main__":
     
     # 評価値行列の確認用なので、必要なかったらコメントアウトしてください
     print(matrix[0])
-    sys.exit()
+    return matrix
 
+if __name__=="__main__":
+    main_tsu()
+    sys.exit()

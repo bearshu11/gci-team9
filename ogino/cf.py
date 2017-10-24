@@ -47,8 +47,20 @@ class DataProcessor():
         """
         # TODO:カテゴリーごとに自由に設定する。
         # TODO:カテゴリーごとに定めたクラスターを有効利用できれば、なおよい。
-        value = 1
-        return value
+        #value = 1
+        for action in actions:
+            if action[0] == 3 and action[1] == 1:
+                return 5.0
+        for action in actions:
+            if action[0] == 3 and action[1] == 0:
+                return 4.5
+        value = 3.0
+        for action in actions:
+            if action[0] == 1:
+                value += 0.3
+            elif action[0] == 2:
+                value += 0.3
+        return min(4.5, value)
 
     def get_max_ids(self, plusone=True):
         """
