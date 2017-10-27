@@ -75,7 +75,7 @@ if __name__=="__main__":
     mf = MatrixFactorization()
 
     print(str(len(user_ids)), str(len(product_ids)))
-    nP,nQ = mf.factorize(matrix, user_ids, product_ids, K=50, threshold=20000000000)
+    nP,nQ = mf.factorize(matrix, user_ids, product_ids, K=50, threshold=20000)
     dif = time.time() - start
     print("time:{}".format(dif)+"[sec]")
 
