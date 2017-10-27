@@ -1,31 +1,41 @@
 import pandas as pd
 import csv
-
-def _id_str2int(str_id):
-        """
-        idを文字からint型に変換する。
-        idをint型で扱った方が、評価値の表にするときにidをindexとすることができ、扱いやすいため。
-
-        Example
-        ------
-        "000000_A" => 0
-        "000034_A" => 34
-        "000103_a" => 103
-
-        """
-        return int(str_id.split("_")[0])
+from tools import id_str2int
 
 if __name__ == "__main__":
+    # TODO:元データからデータを小さくする(行数を減らす)処理（必要であれば）
+    # ----------------------------------------------------------------
+
     df = pd.read_csv("../../data/train/train_D.tsv", sep="\t")
-    user_df = pd.read_csv("../../data/train/clustered_user_with_cv_D.csv")
+    # user_df = pd.read_csv("../../data/train/clustered_user_with_cv_D.csv")
     product_df = pd.read_csv("../../data/train/clustered_product_without_cv_D.csv")
-
     clustered_df = pd.merge(df, product_df[["product_id","cluster"]], on="product_id")
-
     min_df = clustered_df[clustered_df["cluster"] != 0].reset_index(drop=True)
 
-    min_df.user_id = min_df.user_id.apply(_id_str2int)
-    min_df.product_id = min_df.product_id.apply(_id_str2int)
+    # ----------------------------------------------------------------
+    # XXX:ここまでの出力形式
+    # min_df: pandas.DataFrame
+    # header: ["user_id", "product_id", "event_type", "ad" ,"time_stamp", ("cluster")]
+
+
+    # XXX:以下の範囲を編集すべし
+    # ----------------------------------------------------------------
+
+    # TODO:元データから小さくしたデータの出力先
+    min_df_filename = "./sample_data/min_D2.csv"
+
+    # TODO:user_idと評価値の表におけるindexの対応の出力先(.csv)
+    user_index_filename = "./sample_data/min_user_index_D.csv"
+
+    # TODO:product_idと評価値の表におけるindexの対応の出力先(.csv)
+    product_index_filename = "./sample_data/min_product_index_D.csv"
+
+    # ----------------------------------------------------------------
+    # XXX:以下変更不要
+
+
+    min_df.user_id = min_df.user_id.apply(id_str2int)
+    min_df.product_id = min_df.product_id.apply(id_str2int)
 
     user_list = min_df.user_id.values.tolist()
     user_ids = list(set(user_list))
@@ -48,14 +58,14 @@ if __name__ == "__main__":
     min_df.user_id = min_df.user_id.apply(user_ind)
     min_df.product_id = min_df.product_id.apply(product_ind)
 
-    min_df.to_csv("../../data/train/min_D2.csv", index=False)
+    min_df.to_csv(min_df_filename, index=False)
 
-    with open("../../data/train/min_user_index_D.csv","w") as f:
+    with open(user_index_filename,"w") as f:
         writer = csv.writer(f, delimiter=',')
         for user_id in user_ids:
             writer.writerow([user_id])
 
-    with open("../../data/train/min_product_index_D.csv","w") as f:
+    with open(product_index_filename,"w") as f:
         writer = csv.writer(f, delimiter=',')
         for product_id in product_ids:
             writer.writerow([product_id])

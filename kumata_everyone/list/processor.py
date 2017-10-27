@@ -2,6 +2,10 @@ import numpy as np
 from datetime import datetime as dt
 
 class DataProcessor():
+    """
+    MFをするための評価値の表(dict型)を作成するクラス
+    """
+    
     def __init__(self, data, value_computer, users_cluster, products_cluster):
         """
         イニシャライザ

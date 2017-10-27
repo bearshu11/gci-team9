@@ -3,6 +3,10 @@ from datetime import datetime as dt
 import time
 
 class MatrixFactorization():
+    """
+    Matrix Factorizationを実装したクラス
+    """
+
     def get_rating_error(self, r, p, q):
         s = 0
         for i in range(len(p)):
