@@ -35,7 +35,7 @@ def make_eventcountmat(data, event_type, users = [], products = []):
     data['user_id_int'] = data['user_id'].map(lambda x: users_ind.get_loc(x))
     data['product_id_int'] = data['product_id'].map(lambda x: products_ind.get_loc(x))
     
-    mat = np.zeros((len(users), len(products)), dtype='int16')
+    mat = np.zeros((len(users), len(products)), dtype='float16')
     def count_event(event):
         mat[event['user_id_int'], event['product_id_int']] += 1
         return 0
@@ -49,7 +49,7 @@ def make_eventcountmats(data, users = [], products = []):
     if len(products) == 0:
         products = data['product_id'].unique()
     #各イベントごとにカウント
-    mats = np.zeros((4, len(users), len(products)), dtype='int16')
+    mats = np.zeros((4, len(users), len(products)), dtype='float16')
     for i in [0, 1, 2, 3]:
         mats[i, :, :] = make_eventcountmat(data, i, users, products)    
     return mats
