@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
   print('test読み込み')
   test = pd.read_table('../data/test.tsv')
-  #テストデータからユーザーidのカテゴリがCのものを取得
+  #テストデータからユーザーidのカテゴリがAのものを取得
   test_A = test[test['user_id'].map(lambda x: x[-1]) == 'A'].copy()
 
   print('ID -> 数字')
