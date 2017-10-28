@@ -85,7 +85,7 @@ if __name__ == '__main__':
     e = event[2]
     eventcountmats[e][i,j] += 1
   #イベントごとに重みをかけて足し算
-  scoremat = eventcountmats[0] * 1 + eventcountmats[1] * 1 + eventcountmats[2] * 3 + eventcountmats[3] * 7
+  scoremat = eventcountmats[0] * 3.0 + eventcountmats[1] * 1.0 + eventcountmats[2] * 0.3 + eventcountmats[3] * 7.0
   print(time.time() - start),
   print('seconds')
 
