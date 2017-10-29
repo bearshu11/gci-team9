@@ -50,18 +50,17 @@ class DataProcessor():
         """
         # TODO:カテゴリーごとに自由に設定する。
         # TODO:カテゴリーごとに定めたクラスターを有効利用できれば、なおよい。
-        for i in range(len(actions)):
-                value = 0
-                if actions[i][0] == 1:
+        for action in actions:
+                value = 3
+                if action[0] == 1:
                     value += 1.0
-                elif actions[i][0] == 2:
+                elif action[0] == 2:
                     value += 0.3
-                elif actions[i][0] == 0:
+                elif action[0] == 0:
                     value += 6.0
-                elif action[i][0] == 3:
+                elif action[0] == 3:
                     value += 8.0
         return value
-
     def get_max_ids(self, plusone=True):
         """
         最大のuser_idとproduct_idを得るメソッド
