@@ -1,6 +1,5 @@
 import numpy as np
 from datetime import datetime as dt
-import math
 
 class DataProcessor():
     def __init__(self, data, value_computer, users_cluster, products_cluster):

@@ -1,6 +1,5 @@
 import numpy as np
 from datetime import datetime as dt
-import math
 
 class DataProcessor():
     def __init__(self, data, value_computer, users_cluster, products_cluster):
@@ -137,19 +136,24 @@ class DataProcessor():
 
         """
 
+        user_ids, product_ids = self.get_ids()
+
         #
         cf_data=dict()
         for row in self.data:
             user_id = self._id_str2int(row[0])
             product_id = self._id_str2int(row[1])
-            if not user_id in cf_data.keys():
-                cf_data[user_id]=dict()
-            if not product_id in cf_data[user_id].keys():
-                cf_data[user_id][product_id]=[]
+
+            user_index = user_ids.index(user_id)
+            product_index = product_ids.index(product_id)
+            if not user_index in cf_data.keys():
+                cf_data[user_index]=dict()
+            if not product_index in cf_data[user_index].keys():
+                cf_data[user_index][product_index]=[]
             # 時刻の小数点以下切り捨て
             action = [int(row[2]),int(row[3]),dt.strptime(row[4].split(".")[0], '%Y-%m-%d %H:%M:%S')]
 
-            cf_data[user_id][product_id].append(action)
+            cf_data[user_index][product_index].append(action)
 
         cf_dict=dict()
         for user_id, user_actions in cf_data.items():
