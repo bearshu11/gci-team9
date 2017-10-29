@@ -1,3 +1,5 @@
+# coding:utf-8
+
 import csv
 from processor import DataProcessor
 from mf import MatrixFactorization
@@ -18,13 +20,13 @@ if __name__=="__main__":
     data_filename = "./sample_data/min_A2.csv"
 
     # TODO:user_idとクラスターの関係を記したfileの場所(必要なければNoneを代入)
-    user_cluster_filename = "./sample_data/prepared_data/user_cluster_A.csv"
+    user_cluster_filename = "./sample_data/user_cluster_A.csv"
 
     # TODO:product_idとクラスターの関係を記したfileの場所(必要なければNoneを代入)
     product_cluster_filename = None
 
     # TODO:提出すべきuser_idが記してあるfile(test.tsv)の場所と対象のカテゴリー
-    test_filename = "../../test.tsv"
+    test_filename = "./sample_data/raw_data/test.tsv"
     category = "A"
 
     # ---ファイル出力先の設定---

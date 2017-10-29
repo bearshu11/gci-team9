@@ -17,7 +17,7 @@ if __name__ == "__main__":
     product_vector_filename = "./sample_data/min_product_vector_A.csv"
 
     # TODO:提出すべきuser_idが記してあるfile(test.tsv)の場所と対象のカテゴリー
-    test_filename = "../../test.tsv"
+    test_filename = "./sample_data/raw_data/test.tsv"
     category = "A"
 
     # TODO:user_idと評価値の表におけるindexの対応を記したfile(.csv)の場所

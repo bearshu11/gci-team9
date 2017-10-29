@@ -1,3 +1,5 @@
+# coding:utf-8
+
 import pandas as pd
 import csv
 from tools import id_str2int
