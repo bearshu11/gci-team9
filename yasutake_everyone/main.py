@@ -49,11 +49,11 @@ if __name__=="__main__":
     print(np.dot(P,Q))
 
 
-    with open("user_vector_A.csv","w") as f:
+    with open("user_vector_B.csv","w") as f:
         writer = csv.writer(f, delimiter=',')
         for row in P:
             writer.writerow(row)
-    with open("dproduct_vector_A.csv","w") as f:
+    with open("dproduct_vector_B.csv","w") as f:
         writer = csv.writer(f, delimiter=',')
         for row in Q:
             writer.writerow(row)
