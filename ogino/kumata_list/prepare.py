@@ -6,9 +6,9 @@ if __name__ == "__main__":
     # TODO:元データからデータを小さくする(行数を減らす)処理（必要であれば）
     # ----------------------------------------------------------------
 
-    df = pd.read_csv("../../data/train/train_D.tsv", sep="\t")
+    df = pd.read_csv("../../data/train/train_C.tsv", sep="\t")
     # user_df = pd.read_csv("../../data/train/clustered_user_with_cv_D.csv")
-    product_df = pd.read_csv("../../data/train/clustered_product_without_cv_D.csv")
+    product_df = pd.read_csv("sample_data/prepare/clustered_product_without_cv_C.csv")
     clustered_df = pd.merge(df, product_df[["product_id","cluster"]], on="product_id")
     min_df = clustered_df[clustered_df["cluster"] != 0].reset_index(drop=True)
 
@@ -22,13 +22,13 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------
 
     # TODO:元データから小さくしたデータの出力先
-    min_df_filename = "./sample_data/min_D2.csv"
+    min_df_filename = "./sample_data/min_C2.csv"
 
     # TODO:user_idと評価値の表におけるindexの対応の出力先(.csv)
-    user_index_filename = "./sample_data/min_user_index_D.csv"
+    user_index_filename = "./sample_data/min_user_index_C.csv"
 
     # TODO:product_idと評価値の表におけるindexの対応の出力先(.csv)
-    product_index_filename = "./sample_data/min_product_index_D.csv"
+    product_index_filename = "./sample_data/min_product_index_C.csv"
 
     # ----------------------------------------------------------------
     # XXX:以下変更不要
