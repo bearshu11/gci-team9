@@ -10,11 +10,11 @@ if __name__ == "__main__":
 
     df = pd.read_csv("../../data/train/train_A.tsv", sep="\t")
     # user_df = pd.read_csv("../../data/train/clustered_user_with_cv_D.csv")
-#     product_df = pd.read_csv("../../data/train/clustered_product_without_cv_D.csv")
-#     clustered_df = pd.merge(df, product_df[["product_id","cluster"]], on="product_id")
-#     min_df = clustered_df[clustered_df["cluster"] != 0].reset_index(drop=True)
+    product_df = pd.read_csv("./sample_data/product_cluster_A.csv")
+    clustered_df = pd.merge(df, product_df[["product_id","cluster"]], on="product_id")
+    min_df = clustered_df[(clustered_df["cluster"] != 7) & (clustered_df["cluster"] != 2)].reset_index(drop=True)
     min_df = df
-    print(df.head())
+    print(min_df.head())
 
     # ----------------------------------------------------------------
     # XXX:ここまでの出力形式

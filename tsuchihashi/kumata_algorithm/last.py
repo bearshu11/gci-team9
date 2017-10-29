@@ -1,3 +1,5 @@
+# coding:utf-8
+
 import numpy as np
 from tools import *
 import random
@@ -35,8 +37,8 @@ if __name__ == "__main__":
 
     # ---存在しないuser_idへの対応---
 
-    products_cluster_df = pd.read_csv("./sample_data/prepared_data/product_cluster_A.csv")
-    products_cluster2 = products_cluster_df[products_cluster_df["cluster"] == 2].values.tolist()
+    products_cluster_df = pd.read_csv("./sample_data/product_cluster_A.csv")
+    products_cluster2 = products_cluster_df[(products_cluster_df["cluster"] == 5) | (products_cluster_df["cluster"] == 6)].values.tolist()
     random.seed(0)
 
     def for_non_exist_user_id(user_id):
