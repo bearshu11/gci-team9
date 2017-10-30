@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # ---ファイル出力先の設定---
 
     # TODO:提出するファイルの保存先(.tsv)
-    submit_filename = "./sample_data/submit_data/submit_D.tsv"
+    submit_filename = "../submit_data/submit_D_kumata.tsv"
 
 
     # ---存在しないuser_idへの対応---
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     recommendation = dict()
     for target_user_id in target_user_ids:
         row = [0] * len(product_vectors)
-        str_recommend_user_id = id_int2str(target_user_id,"D")
+        str_recommend_user_id = id_int2str(target_user_id,category)
         recommendation[str_recommend_user_id] = []
         if target_user_id in users_index:
             target_user_index = users_index.index(target_user_id)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
                 row[product_index] = np.dot(user_vectors[target_user_index], product_vector)
             recommend_product_indices = np.argsort(np.array(row))[::-1]
             for recommend_product_index in recommend_product_indices:
-                str_recommend_product_id = id_int2str(products_index[recommend_product_index],"d")
+                str_recommend_product_id = id_int2str(products_index[recommend_product_index],category.lower())
 
                 recommendation[str_recommend_user_id].append(str_recommend_product_id)
                 if len(recommendation[str_recommend_user_id]) > 21:
