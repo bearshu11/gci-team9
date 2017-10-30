@@ -1,3 +1,6 @@
+#!usr/bin/python
+# -*- coding:utf-8 -*-
+
 import numpy as np
 from datetime import datetime as dt
 import time

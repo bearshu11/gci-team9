@@ -1,3 +1,6 @@
+#!usr/bin/python
+# -*- coding:utf-8 -*-
+
 import csv
 from processor import DataProcessor
 from mf import MatrixFactorization
@@ -15,32 +18,33 @@ if __name__=="__main__":
     # ---ファイルの読み込み先の設定---
 
     # TODO:元データのfileの場所(行数に関してはデータを小さくしてもよい)
-    data_filename = "./sample_data/min_D2.csv"
+    data_filename = "./sample_data/min_C2.csv"
 
     # TODO:user_idとクラスターの関係を記したfileの場所(必要なければNoneを代入)
-    user_cluster_filename = "./sample_data/prepared_data/user_cluster_D.csv"
+    #user_cluster_filename = "./sample_data/prepared_data/user_cluster_C.csv"
+    user_cluster_filename = None
 
     # TODO:product_idとクラスターの関係を記したfileの場所(必要なければNoneを代入)
     product_cluster_filename = None
 
     # TODO:提出すべきuser_idが記してあるfile(test.tsv)の場所と対象のカテゴリー
-    test_filename = "./sample_data/raw_data/test.tsv"
-    category = "D"
+    test_filename = "../../data/test.tsv"
+    category = "C"
 
     # ---ファイル出力先の設定---
 
     # TODO:MF後の user_id x 特徴量 のベクトルの保存先
-    user_vector_filename = "./sample_data/min_user_vector_D.csv"
+    user_vector_filename = "./sample_data/min_user_vector_C.csv"
 
     # TODO:MF後の product_id x 特徴量 のベクトルの保存先
-    product_vector_filename = "./sample_data/min_product_vector_D.csv"
+    product_vector_filename = "./sample_data/min_product_vector_C.csv"
 
     # ----------------------------------------------------------------
     # XXX:以下変更不要
 
     data = measure_time(load_raw_file, data_filename)
 
-    user_cluster = None
+    users_cluster = None
     if not user_cluster_filename is None:
         users_cluster = measure_time(load_users_cluster_file, user_cluster_filename)
 
@@ -75,7 +79,7 @@ if __name__=="__main__":
     mf = MatrixFactorization()
 
     print(str(len(user_ids)), str(len(product_ids)))
-    nP,nQ = mf.factorize(matrix, user_ids, product_ids, K=50, threshold=20000)
+    nP,nQ = mf.factorize(matrix, user_ids, product_ids, K=50, threshold=20000, steps=500)
     dif = time.time() - start
     print("time:{}".format(dif)+"[sec]")
 
