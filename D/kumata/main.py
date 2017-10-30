@@ -40,7 +40,7 @@ if __name__=="__main__":
 
     data = measure_time(load_raw_file, data_filename)
 
-    user_cluster = None
+    users_cluster = None
     if not user_cluster_filename is None:
         users_cluster = measure_time(load_users_cluster_file, user_cluster_filename)
 
