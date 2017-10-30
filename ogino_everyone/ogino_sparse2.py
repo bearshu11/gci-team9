@@ -68,8 +68,8 @@ if __name__ == '__main__':
   train['product_id_int'] = train['product_id'].map(lambda x : product_ids_index.get_loc(x))
   test_C['user_id_int'] = test_C['user_id'].map(lambda x : user_ids_index.get_loc(x))
   print('クラスター読込')
-  user_cluster = pd.read_csv('../ogino_everyone/user_cluster.csv')
-  product_cluster = pd.read_csv('../ogino_everyone/product_cluster.csv')
+  user_cluster = pd.read_csv('user_cluster.csv')
+  product_cluster = pd.read_csv('product_cluster.csv')
 
   user_cluster.columns = ['user_id_int', 'user_cluster']
   train = train.merge(user_cluster, on='user_id_int')
@@ -93,7 +93,7 @@ if __name__ == '__main__':
   print(np.where(L==0))
   L[L == 0] = 1
   L = np.power(L, -0.5)
-  scoremat = scoremat.multiply(L)
+  scoremat = scoremat.multiply(L).asformat('lil')
 
   print(time.time() - start),
   print('seconds')
