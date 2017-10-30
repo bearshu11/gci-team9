@@ -46,7 +46,7 @@ if __name__=="__main__":
     dif = time.time() - start
     print("time:{}".format(dif)+"[sec]")
 
-    print(np.dot(P,Q))
+    #print(np.dot(P,Q))
 
 
     with open("user_vector_B.csv","w") as f:
