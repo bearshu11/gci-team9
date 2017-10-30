@@ -36,7 +36,7 @@ def sparse_collaborative_filtering(scoremat_sparse, test, user_ids, product_ids)
         break
     k = len(recommends)
     user_id = user_ids[target_int]
-    add = pd.DataFrame([[user_id] * k, recommends, range(k)]).T
+    add = pd.DataFrame([[user_id] * k, recommends, list(range(k))]).T
     recommend_df = pd.concat([recommend_df, add], axis = 0)
   i = len(test_user_ids)
   print(str(i)+'/'+str(len(test_user_ids))),
