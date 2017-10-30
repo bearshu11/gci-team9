@@ -1,5 +1,3 @@
-# coding:utf-8
-
 import numpy as np
 from tools import *
 import random
@@ -13,32 +11,32 @@ if __name__ == "__main__":
     # ---ファイルの読み込み先の設定---
 
     # TODO:MF後の user_id x 特徴量 のベクトルの保存先(.csv)
-    user_vector_filename = "./sample_data/min_user_vector_A.csv"
+    user_vector_filename = "./sample_data/min_user_vector_D.csv"
 
     # TODO:MF後の product_id x 特徴量 のベクトルの保存先(.csv)
-    product_vector_filename = "./sample_data/min_product_vector_A.csv"
+    product_vector_filename = "./sample_data/min_product_vector_D.csv"
 
     # TODO:提出すべきuser_idが記してあるfile(test.tsv)の場所と対象のカテゴリー
     test_filename = "./sample_data/raw_data/test.tsv"
-    category = "A"
+    category = "D"
 
     # TODO:user_idと評価値の表におけるindexの対応を記したfile(.csv)の場所
-    user_index_filename = "./sample_data/min_user_index_A.csv"
+    user_index_filename = "./sample_data/min_user_index_D.csv"
 
     # TODO:product_idと評価値の表におけるindexの対応を記したfile(.csv)の場所
-    product_index_filename = "./sample_data/min_product_index_A.csv"
+    product_index_filename = "./sample_data/min_product_index_D.csv"
 
 
     # ---ファイル出力先の設定---
 
     # TODO:提出するファイルの保存先(.tsv)
-    submit_filename = "./sample_data/submit_data/submit_A.tsv"
+    submit_filename = "../submit_data/submit_D_kumata.tsv"
 
 
     # ---存在しないuser_idへの対応---
 
-    products_cluster_df = pd.read_csv("./sample_data/product_cluster_A.csv")
-    products_cluster2 = products_cluster_df[(products_cluster_df["cluster"] == 5) | (products_cluster_df["cluster"] == 6)].values.tolist()
+    products_cluster_df = pd.read_csv("./sample_data/prepared_data/product_cluster_D.csv")
+    products_cluster2 = products_cluster_df[products_cluster_df["cluster"] == 2].values.tolist()
     random.seed(0)
 
     def for_non_exist_user_id(user_id):
@@ -88,7 +86,7 @@ if __name__ == "__main__":
     recommendation = dict()
     for target_user_id in target_user_ids:
         row = [0] * len(product_vectors)
-        str_recommend_user_id = id_int2str(target_user_id,"A")
+        str_recommend_user_id = id_int2str(target_user_id,category)
         recommendation[str_recommend_user_id] = []
         if target_user_id in users_index:
             target_user_index = users_index.index(target_user_id)
@@ -96,7 +94,7 @@ if __name__ == "__main__":
                 row[product_index] = np.dot(user_vectors[target_user_index], product_vector)
             recommend_product_indices = np.argsort(np.array(row))[::-1]
             for recommend_product_index in recommend_product_indices:
-                str_recommend_product_id = id_int2str(products_index[recommend_product_index],"a")
+                str_recommend_product_id = id_int2str(products_index[recommend_product_index],category.lower())
 
                 recommendation[str_recommend_user_id].append(str_recommend_product_id)
                 if len(recommendation[str_recommend_user_id]) > 21:
